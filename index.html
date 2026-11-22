@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zwischentest Training A1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: спокойный экзаменационный бланк — как Moodle, но с объяснениями
+IDEA: австрийский Prüfungsbogen — белый лист, красно-бело-красная полоса, крупный номер вопроса
+PICTURE: сам тест — карточка вопроса и полоса клеток прогресса
+COLOUR and TYPE: белый лист, чернила #17181c, австрийский красный как единственный акцент; Archivo + Source Sans 3
+LAYOUT: колонка 780px; на телефоне то же в одну колонку
+*/
+:root{color-scheme:light dark;--bg:light-dark(#f4f2ee,#121315);--paper:light-dark(#ffffff,#1c1d21);--ink:light-dark(#17181c,#ecebe7);--mute:light-dark(#62646b,#a2a4ab);--line:light-dark(#dedbd4,#33353b);--red:light-dark(#c8102e,#ff5a6e);--ok:light-dark(#1b7a45,#5fd393);--okbg:light-dark(#e6f4ec,#173324);--bad:light-dark(#b3261e,#ff8a80);--badbg:light-dark(#fbeceb,#3a1d1b);--part:light-dark(#b26b00,#f0b85a);--partbg:light-dark(#fdf3dc,#3a2f12);--chip:light-dark(#f1efe9,#2a2c31)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Source Sans 3",system-ui,sans-serif;overflow-x:clip}
+.flag{height:10px;background:linear-gradient(var(--red) 0 33%,var(--paper) 33% 66%,var(--red) 66%)}
+.wrap{max-width:780px;margin:0 auto;padding:clamp(18px,4vw,40px) max(4vw,14px) 60px}
+h1,h2{font-family:Archivo,system-ui,sans-serif;line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,6vw,44px);font-weight:800}
+h2{font-size:22px;font-weight:700}
+.sub{color:var(--mute);margin:8px 0 0}
+.paper{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:clamp(18px,4vw,32px);margin-top:18px;box-shadow:0 12px 30px -24px rgba(0,0,0,.35)}
+.bar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.timer{font:700 22px Archivo,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.timer.low{color:var(--red)}
+.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px;margin-top:14px}
+.cells button{height:32px;border-radius:6px;border:1px solid var(--line);background:var(--chip);color:var(--mute);font:600 12px Archivo,sans-serif;cursor:pointer;padding:0}
+.cells button.cur{border-color:var(--ink);color:var(--ink);background:var(--paper);box-shadow:inset 0 0 0 1px var(--ink)}
+.cells button.done{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.cells button.r{background:var(--ok);border-color:var(--ok);color:#fff}.cells button.w{background:var(--bad);border-color:var(--bad);color:#fff}.cells button.p{background:var(--part);border-color:var(--part);color:#fff}
+.cells button:disabled{cursor:default}
+.qno{display:flex;gap:14px;align-items:baseline}
+.qno b{font:800 46px/1 Archivo,sans-serif;color:var(--red)}
+.qno span{color:var(--mute);font-size:15px}
+.prompt{font-size:19px;margin:14px 0 18px;white-space:pre-line}
+.opt{display:flex;gap:12px;align-items:center;min-height:48px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer}
+.opt:hover{border-color:var(--mute)}
+.opt input{width:20px;height:20px;accent-color:var(--red);flex:none}
+.opt.sel{border-color:var(--ink)}
+input[type=text],textarea,select{font:16px "Source Sans 3",sans-serif;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.inl{display:inline-block;width:8.5em!important;margin:4px 3px;padding:6px 8px!important}
+select{width:auto;min-width:130px;min-height:44px}
+textarea{min-height:190px;resize:vertical}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,.opt:focus-within{outline:2px solid var(--red);outline-offset:2px}
+.grid{font:700 18px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.12em;background:var(--chip);border-radius:10px;padding:14px;overflow-wrap:anywhere;margin-bottom:14px}
+.mrow{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.tfb{display:flex;gap:6px}
+.tfb button{min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:600 15px "Source Sans 3",sans-serif;cursor:pointer}
+.tfb button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.text{line-height:2.4}
+.gap{display:inline-flex;align-items:center;justify-content:center;min-width:112px;min-height:38px;padding:2px 10px;margin:0 3px;border:1.5px dashed var(--mute);border-radius:8px;vertical-align:middle;cursor:pointer;background:var(--paper);color:var(--ink);font:600 16px "Source Sans 3",sans-serif;line-height:1.2}
+.gap.full{border-style:solid;border-color:var(--ink);background:var(--chip)}
+.gap.act{border-color:var(--red);border-style:solid}
+.bank,.tiles,.built{display:flex;flex-wrap:wrap;gap:8px}
+.bank{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.built{min-height:56px;padding:8px;border:1.5px dashed var(--mute);border-radius:10px;margin-bottom:12px;align-items:center}
+.chipw{min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:var(--ink);font:600 16px "Source Sans 3",sans-serif;cursor:pointer}
+.chipw.used{opacity:.3}
+.built .chipw{background:var(--paper);border-color:var(--ink)}
+.hint{font-size:14px;color:var(--mute);margin-top:10px}
+.keys{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.keys button{width:40px;height:40px;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--ink);font:600 17px "Source Sans 3",sans-serif;cursor:pointer}
+.passage{background:var(--chip);border-radius:10px;padding:16px 18px;white-space:pre-line;margin-bottom:16px;font-size:17px}
+.audio{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--chip);border-radius:10px;padding:14px;margin-bottom:16px}
+.play{width:56px;height:56px;border-radius:50%;border:0;background:var(--red);color:#fff;cursor:pointer;display:grid;place-items:center;flex:none}
+.play:disabled{opacity:.35;cursor:not-allowed}
+.play svg{width:22px;height:22px}
+.script{font-size:15px;margin-top:10px}
+.script p{margin:2px 0}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{min-height:46px;padding:0 20px;border-radius:10px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font:700 16px Archivo,sans-serif;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.sm{min-height:40px;padding:0 14px;font-size:15px}
+.tests{display:grid;gap:12px;margin-top:20px}
+.tcard{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.tcard h2{font-size:21px}
+.tcard p{margin:4px 0 0;color:var(--mute);font-size:15px}
+.tcard .btns{margin:0}
+.last{font-size:14px;color:var(--ink)}
+.fb{margin-top:18px;border-radius:10px;padding:14px 16px;font-size:16px}
+.fb.r{background:var(--okbg)}.fb.w{background:var(--badbg)}.fb.p{background:var(--partbg)}
+.fb b.t{display:block;margin-bottom:4px;font-family:Archivo,sans-serif}
+.fb .ans{font-weight:600}
+.fb p{margin:6px 0 0}
+.score{font:800 clamp(56px,14vw,96px)/1 Archivo,sans-serif;color:var(--red)}
+.note{font-size:14px;color:var(--mute)}
+.rq{padding:12px 0;border-bottom:1px solid var(--line)}
+.rq summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;list-style:none}
+.rq summary::-webkit-details-marker{display:none}
+.dot{flex:none;width:12px;height:12px;border-radius:50%;transform:translateY(1px)}
+.theory h3{font:700 19px Archivo,sans-serif;margin:26px 0 8px}.theory h3:first-child{margin-top:0}
+.theory p,.theory ul{margin:8px 0}.theory li{margin:4px 0}
+.tb{border-collapse:collapse;width:100%;margin:10px 0;font-size:16px}.tb th,.tb td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.tb th{background:var(--chip);font-weight:600}
+.tbw{overflow-x:auto}
+.tip{background:light-dark(#eef5f1,#16261d);border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;margin:12px 0}
+.err{background:var(--badbg);border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;margin:12px 0}
+.cheat{margin-top:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.cheat summary{cursor:pointer;font:700 16px Archivo,sans-serif}
+.sec{font:800 13px Archivo,sans-serif;color:var(--red);margin:34px 0 0;letter-spacing:.02em}
+.prog{height:6px;border-radius:3px;background:var(--chip);margin-top:8px;overflow:hidden;max-width:260px}.prog i{display:block;height:100%;background:var(--ok)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+@media(max-width:600px){.qno b{font-size:38px}.gap{min-width:96px}.tcard{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="flag"></div>
+<main class="wrap" id="app"><p>Lade …</p></main>
+<div class="toast" id="toast"></div>
+<script src="tests.js"></script>
+<script src="lessons.js"></script>
+<script>
+{
+const TESTS=window.TESTS||[],LESSONS=window.LESSONS||[],ALL=TESTS.concat(LESSONS);
+const LIMIT=60*60;
+const app=document.getElementById('app');
+let T=null,S=null,tick=null,lastInput=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>(s||'').toLowerCase().replace(/[’'„“"«».,!?;:()]/g,' ').replace(/[–—-]/g,' ').replace(/\s+/g,' ').trim();
+const key=id=>'zt-a1-'+id;
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1900)}
+function copy(t,msg){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast(msg),()=>toast('Не удалось скопировать'));else toast('Копирование недоступно')}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const save=()=>store.set(key(T.id),S);
+
+/* ---------- оценка ---------- */
+function rowsScore(rows,a){if(!a)return 0;let c=0;rows.forEach((r,k)=>{if(a[k]===r[1])c++});return c/rows.length}
+function grade(q,a){
+ const empty=a==null||a===''||(Array.isArray(a)&&!a.some(x=>x!=null&&x!==''));
+ if(q.t==='essay')return empty?0:null;
+ if(empty)return 0;
+ switch(q.t){
+  case 'mc':return a===q.a?1:0;
+  case 'tf':return a===q.a?1:0;
+  case 'fill':
+   if(q.set){const got=new Set(String(a).split(/[,;\n]+/).map(norm));return q.set.filter(w=>got.has(w)).length/q.set.length}
+   return q.a.map(norm).includes(norm(a))?1:0;
+  case 'short':return q.a.includes(norm(a))?1:0;
+  case 'multi':{let c=0;q.a.forEach((acc,k)=>{if(acc.map(norm).includes(norm(a[k])))c++});return c/q.a.length}
+  case 'sel':{let c=0;q.rows.forEach((r,k)=>{if(a[k]===r[1])c++});return c/q.rows.length}
+  case 'gap':{let c=0;q.a.forEach((x,k)=>{if(a[k]===x)c++});return c/q.a.length}
+  case 'order':{const s=norm(a.map(i=>q.w[i]).join(' '));return q.a.includes(s)?1:0}
+  case 'read':return rowsScore(q.rows,a);
+  case 'listen':return q.rows?rowsScore(q.rows,a):(a===q.a?1:0);
+ }
+ return 0;
+}
+const cls=g=>g===null?'p':g>=1?'r':g>0?'p':'w';
+
+/* ---------- озвучка ---------- */
+let voices=[];
+function loadVoices(){try{voices=speechSynthesis.getVoices().filter(v=>/^de/i.test(v.lang));voices.sort((a,b)=>(/de-AT/i.test(b.lang)-/de-AT/i.test(a.lang)))}catch(e){voices=[]}}
+try{loadVoices();speechSynthesis.onvoiceschanged=loadVoices}catch(e){}
+function speak(lines,done){
+ try{
+  speechSynthesis.cancel();
+  const roles=[...new Set(lines.map(l=>l[0]))];
+  lines.forEach((l,i)=>{
+   const u=new SpeechSynthesisUtterance(l[2]||l[1]);u.lang='de-DE';u.rate=.88;
+   const r=roles.indexOf(l[0]);
+   if(voices.length){u.voice=voices[r%voices.length];u.lang=u.voice.lang}
+   if(voices.length<2)u.pitch=r%2?0.8:1.15;
+   if(i===lines.length-1)u.onend=done;
+   speechSynthesis.speak(u);
+  });
+  return true;
+ }catch(e){return false}
+}
+const canSpeak=()=>'speechSynthesis' in window;
+
+function makePerm(t){const p={};t.items.forEach((q,i)=>{const n=q.t==='gap'?q.bank.length:q.t==='order'?q.w.length:q.o?q.o.length:0;if(n)p[i]=shuffle([...Array(n).keys()])});return p}
+const P=(qi,n)=>(S.perm&&S.perm[qi])||[...Array(n).keys()];
+/* ---------- главная ---------- */
+function card(t,isL){const s=store.get(key(t.id));
+ const last=s&&s.done?`<div class="last">Последний результат: <b>${s.pct}%</b></div>${isL?`<div class="prog"><i style="width:${s.pct}%"></i></div>`:''}`:s&&!s.done?'<div class="last">Есть незаконченная попытка</div>':'';
+ const btns=isL?`<button class="btn sm red" data-a="read" data-id="${t.id}">Теория</button><button class="btn sm ghost" data-a="learn" data-id="${t.id}">Упражнения</button>`
+  :`${s&&!s.done?`<button class="btn sm" data-a="resume" data-id="${t.id}">Продолжить</button>`:''}${s&&s.done?`<button class="btn sm ghost" data-a="review" data-id="${t.id}">Разбор</button>`:''}<button class="btn sm red" data-a="exam" data-id="${t.id}">Экзамен</button><button class="btn sm ghost" data-a="learn" data-id="${t.id}">Учебный</button>`;
+ return `<div class="tcard"><div><h2>${esc(t.title)}</h2><p>${esc(isL?t.goal:t.sub)} · ${t.items.length} ${isL?'упражнений':'заданий'}</p>${last}</div><div class="btns">${btns}</div></div>`}
+function start(t,a){T=t;let order=[...T.items.keys()];if(a==='exam'){const ess=order.filter(i=>T.items[i].t==='essay');order=shuffle(order.filter(i=>T.items[i].t!=='essay')).concat(ess)}
+ S={mode:a,order,i:0,ans:{},chk:{},plays:{},perm:makePerm(T),start:Date.now(),done:false};save();render();window.scrollTo(0,0)}
+function home(){
+ clearInterval(tick);try{speechSynthesis.cancel()}catch(e){}
+ app.innerHTML=`<h1>Zwischentest A1 — учебник и тренажёр</h1>
+ <p class="sub">Deutsch-Sprachkurs 1 · Momente A1, уроки 1–9. Настоящий тест: среда 25.11, 17:00, 50 вопросов за 60 минут, назад вернуться нельзя.</p>
+ <div class="sec">УЧЕБНИК · теория + упражнения по темам</div>
+ <div class="tests">${LESSONS.map(t=>card(t,true)).join('')}</div>
+ <div class="sec">ПРОБНЫЕ ТЕСТЫ · симуляция экзамена</div>
+ <div class="tests">${TESTS.map(t=>card(t,false)).join('')}</div>
+ <section class="paper"><h2>Как пользоваться</h2>
+ <p><b>Учебник</b>: прочитай теорию главы, потом сделай упражнения. Во время упражнений теорию можно открыть сверху. Порядок глав — от основы к деталям; главы 1–5 самые важные.</p>
+ <p><b>Пробные тесты</b>. Экзамен: 60 минут, случайный порядок, назад нельзя, аудио максимум 2 раза. Учебный режим: проверка и объяснение сразу.</p>
+ <p class="note">Аудио озвучивает синтезатор речи браузера. Кнопки ä ö ü ß под полями ввода вставляют буквы.</p></section>`;
+ app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const t=ALL.find(x=>x.id===b.dataset.id),a=b.dataset.a;
+  if(a==='read')return lesson(t);
+  if(a==='resume'||a==='review'){T=t;S=store.get(key(T.id));render();return}
+  start(t,a)});
+}
+function lesson(t){
+ T=t;clearInterval(tick);
+ app.innerHTML=`<div class="bar"><div><span class="note">Учебник</span><h1>${esc(t.title)}</h1></div><button class="btn sm ghost" id="home">К оглавлению</button></div>
+ <p class="sub"><b>Цель:</b> ${esc(t.goal)}</p>
+ <section class="paper theory">${t.theory.replace(/<table/g,'<div class="tbw"><table').replace(/<\/table>/g,'</table></div>')}</section>
+ <div class="btns"><button class="btn red" id="go">Упражнения (${t.items.length}) →</button><button class="btn ghost" id="home2">К оглавлению</button></div>`;
+ document.getElementById('home').onclick=home;document.getElementById('home2').onclick=home;
+ document.getElementById('go').onclick=()=>start(t,'learn');window.scrollTo(0,0);
+}
+
+/* ---------- экран вопроса ---------- */
+const timeLeft=()=>Math.max(0,LIMIT-Math.floor((Date.now()-S.start)/1000));
+const fmtT=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function render(){
+ clearInterval(tick);try{speechSynthesis.cancel()}catch(e){}
+ if(S.done)return results();
+ const learn=S.mode==='learn',qi=S.order[S.i],q=T.items[qi],a=S.ans[qi],chk=learn&&S.chk[qi],N=S.order.length;
+ const cells=S.order.map((k,j)=>{let c='';if(learn&&S.chk[k])c=cls(grade(T.items[k],S.ans[k]));else if(S.ans[k]!=null&&S.ans[k]!=='')c='done';return `<button data-j="${j}" class="${c} ${j===S.i?'cur':''}" ${learn?'':'disabled'} aria-label="Frage ${j+1}">${j+1}</button>`}).join('');
+ app.innerHTML=`<div class="bar"><div><h2>${esc(T.title)}</h2><span class="note">${learn?'Учебный режим':'Экзамен · назад нельзя'}</span></div>
+ <div class="btns" style="margin:0">${learn?'':`<div class="timer" id="tm">${fmtT(timeLeft())}</div>`}<button class="btn sm ghost" id="home">Выйти</button></div></div>
+ <div class="cells">${cells}</div>
+ ${T.theory?`<details class="cheat"><summary>Теория главы (открыть)</summary><div class="theory">${T.theory.replace(/<table/g,'<div class="tbw"><table').replace(/<\/table>/g,'</table></div>')}</div></details>`:''}
+ <section class="paper"><div class="qno"><b>${S.i+1}</b><span>Frage ${S.i+1} von ${N}</span></div>
+ <div class="prompt">${esc(q.q||'')}</div><div id="body"></div><div id="fb"></div><div class="btns" id="nav"></div></section>`;
+ body(q,qi,a,chk);
+ if(chk)document.getElementById('fb').innerHTML=fbHTML(q,qi);
+ const nav=document.getElementById('nav');
+ nav.innerHTML=learn?`${S.i>0?'<button class="btn ghost" id="prev">← Назад</button>':''}${chk?'':'<button class="btn red" id="check">Проверить</button>'}${S.i<N-1?'<button class="btn" id="next">Дальше →</button>':'<button class="btn" id="fin">Итог</button>'}<button class="btn ghost" id="ask">Скопировать для Claude</button>`
+  :`${S.i<N-1?'<button class="btn" id="next">Nächste Seite →</button>':'<button class="btn red" id="fin">Abgeben</button>'}`;
+ const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f};
+ on('home',()=>{save();home()});
+ on('prev',()=>{S.i--;save();render()});
+ on('next',()=>{S.i++;save();render();window.scrollTo(0,0)});
+ on('check',()=>{S.chk[qi]=true;save();render()});
+ on('fin',e=>{if(!learn){const miss=S.order.filter(k=>{const v=S.ans[k];return v==null||v===''}).length;const b=document.getElementById('fin');if(miss&&!b.dataset.sure){b.dataset.sure=1;b.textContent=`Без ответа: ${miss}. Всё равно сдать`;return}}finish()});
+ on('ask',()=>copy(askText(q,qi),'Скопировано — вставь в чат с Claude'));
+ app.querySelectorAll('.cells button').forEach(b=>{if(!b.disabled)b.onclick=()=>{S.i=+b.dataset.j;save();render()}});
+ if(!learn){tick=setInterval(()=>{const t=timeLeft(),e=document.getElementById('tm');if(e){e.textContent=fmtT(t);e.classList.toggle('low',t<300)}if(t<=0)finish()},1000)}
+}
+function finish(){
+ const auto=S.order.filter(k=>T.items[k].t!=='essay');
+ const pts=auto.reduce((s,k)=>s+grade(T.items[k],S.ans[k]),0);
+ S.pts=pts;S.max=auto.length;S.pct=Math.round(pts/auto.length*100);S.done=true;S.end=Date.now();save();render();window.scrollTo(0,0);
+}
+function setA(qi,v){S.ans[qi]=v;save();
+ if(S.mode!=='learn'){const c=app.querySelector(`.cells button[data-j="${S.i}"]`);if(c)c.classList.toggle('done',v!=null&&v!==''&&!(Array.isArray(v)&&!v.some(x=>x!=null&&x!=='')))}}
+const keysHTML='<div class="keys">'+['ä','ö','ü','ß','Ä','Ö','Ü'].map(c=>`<button type="button" data-k="${c}" tabindex="-1">${c}</button>`).join('')+'</div>';
+function bindKeys(root){root.querySelectorAll('input[type=text],textarea').forEach(i=>i.addEventListener('focus',()=>lastInput=i));
+ root.querySelectorAll('.keys button').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{const i=lastInput&&root.contains(lastInput)?lastInput:root.querySelector('input[type=text],textarea');if(!i||i.disabled)return;const s=i.selectionStart??i.value.length,e=i.selectionEnd??s;i.value=i.value.slice(0,s)+b.dataset.k+i.value.slice(e);i.focus();i.setSelectionRange(s+1,s+1);i.dispatchEvent(new Event('input'))}})}
+function tfRows(rows,a,dis,qi){
+ const v=a?[...a]:[];
+ return {html:rows.map((r,k)=>`<div class="mrow"><span>${esc(r[0])}</span><div class="tfb" data-k="${k}"><button type="button" data-v="1" class="${v[k]===true?'on':''}" ${dis}>richtig</button><button type="button" data-v="0" class="${v[k]===false?'on':''}" ${dis}>falsch</button></div></div>`).join(''),
+  bind(b){b.querySelectorAll('.tfb').forEach(g=>g.querySelectorAll('button').forEach(x=>x.onclick=()=>{const k=+g.dataset.k;v[k]=x.dataset.v==='1';g.querySelectorAll('button').forEach(y=>y.classList.toggle('on',y===x));const arr=rows.map((_,i)=>v[i]);setA(qi,arr)}))}};
+}
+function mcHTML(o,a,dis,qi){return P(qi,o.length).map((k,j)=>`<label class="opt ${a===k?'sel':''}"><input type="radio" name="o" value="${k}" ${a===k?'checked':''} ${dis}>${String.fromCharCode(97+j)}. ${esc(o[k])}</label>`).join('')}
+function bindMC(b,qi){b.querySelectorAll('.opt input').forEach(inp=>inp.onchange=()=>{setA(qi,+inp.value);b.querySelectorAll('.opt').forEach(l=>l.classList.toggle('sel',l.contains(inp)))})}
+
+function body(q,qi,a,lock){
+ const b=document.getElementById('body'),dis=lock?'disabled':'';
+ if(q.t==='mc'){b.innerHTML=mcHTML(q.o,a,dis,qi);bindMC(b,qi)}
+ if(q.t==='tf'){b.innerHTML=[['Wahr',true],['Falsch',false]].map(([t,v])=>`<label class="opt ${a===v?'sel':''}"><input type="radio" name="o" data-v="${v}" ${a===v?'checked':''} ${dis}>${t}</label>`).join('');
+  b.querySelectorAll('input').forEach(i=>i.onchange=()=>{setA(qi,i.dataset.v==='true');b.querySelectorAll('.opt').forEach(l=>l.classList.toggle('sel',l.contains(i)))})}
+ if(q.t==='fill'||q.t==='short'){
+  b.innerHTML=`${q.grid?`<div class="grid">${q.grid}</div>`:''}<input type="text" id="sa" autocomplete="off" spellcheck="false" placeholder="Antwort" value="${esc(a||'')}" ${dis}>${lock?'':keysHTML}${q.hint?`<div class="hint">${q.hint}</div>`:''}`;
+  document.getElementById('sa').oninput=e=>setA(qi,e.target.value);bindKeys(b)}
+ if(q.t==='multi'){
+  const v=a?[...a]:[];let k=0;
+  const parts=esc(q.q).split('___');
+  document.querySelector('.prompt').innerHTML=parts.map((p,i)=>p+(i<parts.length-1?`<input type="text" class="inl" data-k="${i}" autocomplete="off" spellcheck="false" value="${esc(v[i]||'')}" ${dis}>`:'')).join('');
+  b.innerHTML=lock?'':keysHTML;
+  const pr=document.querySelector('.prompt');pr.querySelectorAll('input').forEach(i=>i.oninput=()=>{v[+i.dataset.k]=i.value;setA(qi,q.a.map((_,j)=>v[j]||''))});
+  bindKeys(pr.parentElement)}
+ if(q.t==='sel'){
+  const v=a?[...a]:[];
+  b.innerHTML=q.rows.map((r,k)=>`<div class="mrow"><span>${r[0].replace(/___/g,'<b>___</b>')}</span><select data-k="${k}" ${dis}><option value="">Auswählen …</option>${q.c.map(c=>`<option ${v[k]===c?'selected':''}>${c}</option>`).join('')}</select></div>`).join('');
+  b.querySelectorAll('select').forEach(s=>s.onchange=()=>{v[+s.dataset.k]=s.value||null;setA(qi,q.rows.map((_,j)=>v[j]||null))})}
+ if(q.t==='order'){
+  const v=a?[...a]:[];
+  const draw=()=>{b.innerHTML=`<div class="built" aria-label="Ваш ответ">${v.length?v.map((i,p)=>`<button class="chipw" data-p="${p}" ${dis}>${esc(q.w[i])}</button>`).join(''):'<span class="note">Нажимайте на слова по порядку</span>'}</div>
+   <div class="tiles">${P(qi,q.w.length).map(i=>`<button class="chipw ${v.includes(i)?'used':''}" data-i="${i}" ${dis||v.includes(i)?'disabled':''}>${esc(q.w[i])}</button>`).join('')}</div>
+   ${lock?'':'<div class="btns"><button class="btn sm ghost" id="clr">Сбросить</button></div>'}`;
+   b.querySelectorAll('.tiles .chipw').forEach(c=>c.onclick=()=>{v.push(+c.dataset.i);setA(qi,[...v]);draw()});
+   b.querySelectorAll('.built .chipw').forEach(c=>c.onclick=()=>{v.splice(+c.dataset.p,1);setA(qi,v.length?[...v]:'');draw()});
+   const cl=document.getElementById('clr');if(cl)cl.onclick=()=>{v.length=0;setA(qi,'');draw()}};
+  draw()}
+ if(q.t==='gap'){
+  const v=a?[...a]:[];let act=v.findIndex(x=>!x);if(act<0)act=0;
+  const commit=()=>setA(qi,v.some(Boolean)?q.a.map((_,j)=>v[j]||null):'');
+  const draw=()=>{b.innerHTML=`<div class="text">${q.parts.map((p,k)=>esc(p)+(k<q.a.length?`<button class="gap ${v[k]?'full':''} ${k===act&&!lock?'act':''}" data-k="${k}" ${dis}>${v[k]?esc(v[k]):'&nbsp;'}</button>`:'')).join('')}</div>
+   <div class="bank">${P(qi,q.bank.length).map(i=>q.bank[i]).map(w=>`<button class="chipw ${v.includes(w)?'used':''}" data-w="${esc(w)}" ${dis}>${esc(w)}</button>`).join('')}</div>
+   <div class="hint">Выберите пропуск (красная рамка), затем слово. Нажмите на заполненный пропуск ещё раз, чтобы очистить.</div>`;
+   b.querySelectorAll('.gap').forEach(g=>g.onclick=()=>{const k=+g.dataset.k;if(v[k]&&k===act)v[k]=null;act=k;commit();draw()});
+   b.querySelectorAll('.bank .chipw').forEach(c=>c.onclick=()=>{const w=c.dataset.w,o=v.indexOf(w);if(o>=0)v[o]=null;v[act]=w;const nx=v.findIndex((x,i)=>i<q.a.length&&!x);act=nx>=0?nx:act;commit();draw()})};
+  draw()}
+ if(q.t==='read'){
+  const r=tfRows(q.rows,a,dis,qi);
+  b.innerHTML=`<div class="passage">${esc(q.text)}</div>${r.html}`;r.bind(b)}
+ if(q.t==='listen'){
+  const learn=S.mode==='learn',used=S.plays[qi]||0,left=learn?Infinity:2-used;
+  const inner=q.rows?tfRows(q.rows,a,dis,qi):null;
+  b.innerHTML=`<div class="audio"><button class="play" id="play" aria-label="Abspielen" ${left<=0||!canSpeak()?'disabled':''}><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l14 8-14 8z"/></svg></button>
+  <div><b>Hören</b><div class="note" id="pl">${canSpeak()?(learn?'Слушать можно сколько угодно':`Осталось прослушиваний: ${Math.max(0,left)}`):'Синтез речи недоступен в этом браузере'}</div></div>
+  ${learn||!canSpeak()?'<button class="btn sm ghost" id="scr">Текст</button>':''}</div><div id="scrt"></div>
+  ${inner?inner.html:mcHTML(q.o,a,dis,qi)}`;
+  if(inner)inner.bind(b);else bindMC(b,qi);
+  const p=document.getElementById('play');
+  if(p)p.onclick=()=>{if(!learn){S.plays[qi]=(S.plays[qi]||0)+1;save();const l=2-S.plays[qi];document.getElementById('pl').textContent=`Осталось прослушиваний: ${l}`;p.disabled=true;speak(q.lines,()=>{p.disabled=l<=0})}else speak(q.lines)};
+  const sc=document.getElementById('scr');if(sc)sc.onclick=()=>{const t=document.getElementById('scrt');t.innerHTML=t.innerHTML?'':`<div class="passage script">${q.lines.map(l=>`<p>${l.length>1&&q.lines.length>1?`<b>${esc(l[0])}:</b> `:''}${esc(l[1])}</p>`).join('')}</div>`}}
+ if(q.t==='essay'){
+  b.innerHTML=`<textarea id="es" placeholder="Ich …" ${dis}>${esc(a||'')}</textarea>${lock?'':keysHTML}<div class="hint" id="wc"></div>`;
+  const t=document.getElementById('es'),wc=()=>{const n=(t.value.match(/[.!?](\s|$)/g)||[]).length;document.getElementById('wc').textContent=`Предложений: ${n} из 6`};
+  t.oninput=()=>{setA(qi,t.value);wc()};wc();bindKeys(b)}
+}
+
+/* ---------- ответы и разбор ---------- */
+function ansText(q,a){
+ const empty=a==null||a===''||(Array.isArray(a)&&!a.some(x=>x!=null&&x!==''));
+ if(empty)return '— (нет ответа)';
+ switch(q.t){
+  case 'mc':return q.o[a];
+  case 'tf':return a?'Wahr':'Falsch';
+  case 'multi':return a.map(x=>x||'…').join(', ');
+  case 'sel':return q.rows.map((r,k)=>`${r[0].replace(/<[^>]+>/g,'').replace('___','['+(a[k]||'…')+']')}`).join(' / ');
+  case 'gap':return a.map(x=>x||'…').join(', ');
+  case 'order':return a.map(i=>q.w[i]).join(' ');
+  case 'read':return q.rows.map((r,k)=>`${r[0]} → ${a[k]==null?'…':a[k]?'richtig':'falsch'}`).join(' / ');
+  case 'listen':return q.rows?q.rows.map((r,k)=>`${r[0]} → ${a[k]==null?'…':a[k]?'richtig':'falsch'}`).join(' / '):q.o[a];
+ }
+ return String(a);
+}
+function rightText(q){
+ switch(q.t){
+  case 'mc':return q.o[q.a];
+  case 'tf':return q.a?'Wahr':'Falsch';
+  case 'fill':return q.show||q.a[0];
+  case 'short':case 'order':return q.show||q.a[0];
+  case 'multi':return q.a.map(x=>x[0]).join(', ');
+  case 'sel':return q.rows.map(r=>r[0].replace(/<[^>]+>/g,'').replace('___','['+r[1]+']')).join(' / ');
+  case 'gap':return q.a.join(', ');
+  case 'read':return q.rows.map(r=>`${r[0]} → ${r[1]?'richtig':'falsch'}`).join(' / ');
+  case 'listen':return q.rows?q.rows.map(r=>`${r[0]} → ${r[1]?'richtig':'falsch'}`).join(' / '):q.o[q.a];
+ }
+ return '';
+}
+function fbHTML(q,qi){
+ const a=S.ans[qi],g=grade(q,a),c=cls(g);
+ const t=g===null?'Проверь по списку или пришли Claude':g>=1?'Верно':g>0?`Частично: ${Math.round(g*100)}%`:'Неверно';
+ const script=q.t==='listen'?`<div class="script"><b>Текст:</b>${q.lines.map(l=>`<p>${q.lines.length>1?`<b>${esc(l[0])}:</b> `:''}${esc(l[1])}</p>`).join('')}</div>`:'';
+ if(q.t==='essay')return `<div class="fb p"><b class="t">${t}</b><div>Чек-лист:</div><ul>${q.check.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><div>Образец: <i>${esc(q.model)}</i></div></div>`;
+ return `<div class="fb ${c}"><b class="t">${t}</b><div>Твой ответ: <span class="ans">${esc(ansText(q,a))}</span></div>
+ <div>Правильно: <span class="ans">${esc(rightText(q))}</span></div>${script}<p>${q.ex||''}</p></div>`;
+}
+function askText(q,qi){return `Вопрос из тренажёра (${T.title}):\n${(q.q||'').replace(/___/g,'___')}${q.grid?'\n'+q.grid:''}${q.text?'\nТекст: '+q.text:''}\nМой ответ: ${ansText(q,S.ans[qi])}\nОбъясни, пожалуйста: `}
+
+function results(){
+ clearInterval(tick);
+ const pct=S.pct,note=pct>=86?'sehr gut':pct>=74?'gut':pct>=62?'befriedigend':pct>=50?'genügend':'nicht genügend';
+ const used=S.mode==='exam'?fmtT(Math.min(LIMIT,Math.floor(((S.end||Date.now())-S.start)/1000))):null;
+ const wrong=S.order.filter(k=>{const g=grade(T.items[k],S.ans[k]);return g===null||g<1});
+ app.innerHTML=`<div class="bar"><h1>Ergebnis · ${esc(T.title)}</h1><button class="btn sm ghost" id="home">К списку тестов</button></div>
+ <section class="paper"><div class="score">${pct}%</div>
+ <p style="margin:6px 0 0;font-size:19px"><b>${note}</b> · ${(Math.round(S.pts*10)/10).toString().replace('.',',')} из ${S.max} баллов${used?` · время ${used}`:''}</p>
+ <p class="note">Шкала курса: 86% sehr gut, 74% gut, 62% befriedigend, 50% genügend. Сочинение в процент не входит, его проверяет преподаватель.</p>
+ <div class="btns"><button class="btn red" id="again">Пройти заново</button><button class="btn ghost" id="wrong">Скопировать ошибки для Claude</button></div></section>
+ <section class="paper"><h2>Разбор</h2>${S.order.map((k,j)=>{const q=T.items[k],c=cls(grade(q,S.ans[k]));return `<details class="rq" ${c!=='r'?'open':''}><summary><span class="dot" style="background:var(--${c==='r'?'ok':c==='w'?'bad':'part'})"></span><span><b>${j+1}.</b> ${esc((q.q||'').split('\n')[0])}</span></summary>${fbHTML(q,k)}</details>`}).join('')}</section>`;
+ document.getElementById('home').onclick=home;
+ document.getElementById('again').onclick=()=>{store.del(key(T.id));home()};
+ document.getElementById('wrong').onclick=()=>{
+  const lines=wrong.map(k=>{const q=T.items[k];return `• ${(q.q||'').replace(/\n/g,' ')}${q.t==='essay'?'\n  мой текст: '+(S.ans[k]||''):'\n  мой ответ: '+ansText(q,S.ans[k])}`});
+  copy(`Результат (${T.title}): ${pct}%.\nРазбери со мной ошибки:\n${lines.join('\n')}`,'Скопировано — вставь в чат')};
+}
+home();
+}
+</script>
+</body>
+</html>
