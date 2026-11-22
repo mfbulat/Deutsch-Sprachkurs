@@ -117,9 +117,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-vis
 <div class="toast" id="toast"></div>
 <script src="tests.js"></script>
 <script src="lessons.js"></script>
+<script src="lessons2.js"></script>
 <script>
 {
 const TESTS=window.TESTS||[],LESSONS=window.LESSONS||[],ALL=TESTS.concat(LESSONS);
+function buildMix(ref){return {id:'MIX',title:'Микс по всем главам',items:ref.map(([l,i])=>LESSONS.find(x=>x.id===l).items[i]),ref}}
+function newMix(n){const all=[];LESSONS.forEach(l=>l.items.forEach((_,i)=>all.push([l.id,i])));return buildMix(shuffle(all).slice(0,n))}
 const LIMIT=60*60;
 const app=document.getElementById('app');
 let T=null,S=null,tick=null,lastInput=null;
@@ -193,13 +196,17 @@ function home(){
  <p class="sub">Deutsch-Sprachkurs 1 · Momente A1, уроки 1–9. Настоящий тест: среда 25.11, 17:00, 50 вопросов за 60 минут, назад вернуться нельзя.</p>
  <div class="sec">УЧЕБНИК · теория + упражнения по темам</div>
  <div class="tests">${LESSONS.map(t=>card(t,true)).join('')}</div>
+ <div class="tests"><div class="tcard"><div><h2>Микс по всем главам</h2><p>25 случайных упражнений из учебника — каждый раз новый набор · ${LESSONS.reduce((s,l)=>s+l.items.length,0)} упражнений в банке</p>${(()=>{const s=store.get(key('MIX'));return s&&s.done?`<div class="last">Последний микс: <b>${s.pct}%</b></div>`:s&&!s.done?'<div class="last">Есть незаконченный микс</div>':''})()}</div><div class="btns">${(()=>{const s=store.get(key('MIX'));return s&&!s.done?'<button class="btn sm" data-a="mixresume" data-id="MIX">Продолжить</button>':''})()}<button class="btn sm red" data-a="mix" data-id="MIX">Новый микс</button></div></div></div>
  <div class="sec">ПРОБНЫЕ ТЕСТЫ · симуляция экзамена</div>
  <div class="tests">${TESTS.map(t=>card(t,false)).join('')}</div>
  <section class="paper"><h2>Как пользоваться</h2>
  <p><b>Учебник</b>: прочитай теорию главы, потом сделай упражнения. Во время упражнений теорию можно открыть сверху. Порядок глав — от основы к деталям; главы 1–5 самые важные.</p>
  <p><b>Пробные тесты</b>. Экзамен: 60 минут, случайный порядок, назад нельзя, аудио максимум 2 раза. Учебный режим: проверка и объяснение сразу.</p>
  <p class="note">Аудио озвучивает синтезатор речи браузера. Кнопки ä ö ü ß под полями ввода вставляют буквы.</p></section>`;
- app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const t=ALL.find(x=>x.id===b.dataset.id),a=b.dataset.a;
+ app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+  if(a==='mix'){const m=newMix(25);start(m,'learn');S.ref=m.ref;save();return}
+  if(a==='mixresume'){S=store.get(key('MIX'));T=buildMix(S.ref);render();return}
+  const t=ALL.find(x=>x.id===b.dataset.id);
   if(a==='read')return lesson(t);
   if(a==='resume'||a==='review'){T=t;S=store.get(key(T.id));render();return}
   start(t,a)});
