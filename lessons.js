@@ -1,6 +1,6 @@
 // Учебник: главы = теория (HTML) + упражнения (те же типы, что в tests.js)
 window.LESSONS = [
-{id:'L1', title:'1. Глаголы в настоящем времени (Präsens)', goal:'Правильно спрягать любой глагол: окончания, особые основы, смена гласной, sein и haben.',
+{id:'L1', title:'1. Verbs in the present tense (Präsens)', goal:'Conjugate any verb: endings, special stems, vowel change, sein and haben.',
 theory:`
 <h3>Шаг 1. Основа + окончание</h3>
 <p>Инфинитив (Infinitiv) = <b>основа (Stamm) + -en</b>: wohn-<b>en</b>, komm-<b>en</b>, mach-<b>en</b>. Отбрасываем -en и добавляем окончание по лицу:</p>
@@ -45,7 +45,7 @@ items:[
  {t:'tf',q:'Ist alles richtig?\nEr schläft. Du siehst. Ihr fahrt.',a:true,ex:'Да: er schl<b>ä</b>ft, du s<b>ie</b>hst, ihr fahrt (у ihr без умлаута).'}
 ]},
 
-{id:'L2', title:'2. können, möchten, mögen + рамка предложения', goal:'Спрягать модальные глаголы, ставить инфинитив в конец, различать möchte и mag.',
+{id:'L2', title:'2. können, möchten, mögen + sentence bracket', goal:'Conjugate modal verbs, put the infinitive at the end, tell möchte from mag.',
 theory:`
 <h3>Формы</h3>
 <table class="tb"><tr><th></th><th>können (мочь, уметь)</th><th>möchten (хотел бы)</th><th>mögen (любить, нравиться)</th></tr>
@@ -82,7 +82,7 @@ items:[
  {t:'order',q:'Ordnen Sie den Satz.',w:['gern','Ich','Pizza','esse','.'],a:['ich esse gern pizza','ich esse pizza gern','pizza esse ich gern','gern esse ich pizza'],show:'Ich esse gern Pizza.',ex:'Нейтрально: Ich esse gern Pizza (gern сразу после глагола). Тоже правильно: Ich esse Pizza gern.'}
 ]},
 
-{id:'L3', title:'3. Порядок слов и вопросы', goal:'Глагол всегда на своём месте: утверждение, инверсия, W-вопрос, вопрос да/нет, ja / nein / doch.',
+{id:'L3', title:'3. Word order and questions', goal:'Verb in second position: statements, inversion, W-questions, yes/no questions, ja / nein / doch.',
 theory:`
 <h3>Главное правило: спрягаемый глагол — на 2-м месте</h3>
 <table class="tb"><tr><th>тип</th><th>1</th><th>2</th><th>дальше</th></tr>
@@ -114,7 +114,7 @@ items:[
  {t:'tf',q:'Ist der Satz richtig?\nMorgen ich habe keine Zeit.',a:false,ex:'Инверсия: <b>Morgen habe ich</b> keine Zeit.'}
 ]},
 
-{id:'L4', title:'4. Артикли: der / die / das, ein / kein, nicht', goal:'Угадывать род по признакам, правильно выбирать ein/kein и nicht/kein.',
+{id:'L4', title:'4. Articles: der / die / das, ein / kein, nicht', goal:'Guess the gender from clues; choose ein/kein and nicht/kein correctly.',
 theory:`
 <h3>Подсказки для рода</h3>
 <table class="tb"><tr><th>der (м.)</th><th>die (ж.)</th><th>das (ср.)</th></tr>
@@ -149,7 +149,7 @@ items:[
  {t:'mc',q:'Das Auto ist neu. ___ ist sehr schnell.',o:['Es','Er','Sie','Ihn'],a:0,ex:'das Auto → <b>es</b>.'}
 ]},
 
-{id:'L5', title:'5. Akkusativ', goal:'Понимать, где Nominativ, где Akkusativ, и не забывать -en у мужского рода.',
+{id:'L5', title:'5. Accusative (Akkusativ)', goal:'Tell Nominativ from Akkusativ and never forget -en with masculine nouns.',
 theory:`
 <h3>Что это</h3>
 <p><b>Nominativ</b> — кто/что делает (подлежащее). <b>Akkusativ</b> — кого/что (прямое дополнение, на кого направлено действие).</p>
@@ -178,7 +178,7 @@ items:[
   ex:'der Tisch → einen; die Lampe → eine; das Bett → ein; der Schrank → keinen («нет шкафа, но нужен»).'}
 ]},
 
-{id:'L6', title:'6. Притяжательные (mein, dein, sein, ihr …) и семья', goal:'Выбирать нужное притяжательное по владельцу и окончание по слову.',
+{id:'L6', title:'6. Possessives (mein, dein, sein, ihr …) and family', goal:'Pick the possessive by owner and the ending by noun.',
 theory:`
 <h3>Кто владелец?</h3>
 <table class="tb"><tr><th>лицо</th><th>притяжательное</th><th>пример</th></tr>
@@ -208,7 +208,7 @@ items:[
  {t:'mc',q:'Meine Mutter und mein Vater sind meine ___.',o:['Eltern','Geschwister','Großeltern','Kinder'],a:0,ex:'die Eltern — родители.'}
 ]},
 
-{id:'L7', title:'7. Множественное число (Plural)', goal:'Знать основные группы и учить слова сразу с формой множественного числа.',
+{id:'L7', title:'7. Plural', goal:'Know the main plural groups and learn every noun with its plural.',
 theory:`
 <p>Артикль во множественном числе всегда <b>die</b> (kein → <b>keine</b>). Сложность — в окончании слова.</p>
 <table class="tb"><tr><th>окончание</th><th>кто так делает</th><th>примеры</th></tr>
@@ -230,7 +230,7 @@ items:[
  {t:'fill',q:'Wie viele ___ hast du? (die Tasche)',a:['taschen'],ex:'die Tasche → Taschen.'}
 ]},
 
-{id:'L8', title:'8. Числа, цены, возраст', goal:'Без ошибок читать и писать числа, годы и цены.',
+{id:'L8', title:'8. Numbers, prices, age', goal:'Read and write numbers, years and prices without mistakes.',
 theory:`
 <h3>0–20</h3>
 <p>null, eins, zwei, drei, vier, fünf, sechs, sieben, acht, neun, zehn, elf, zwölf, dreizehn, vierzehn, fünfzehn, <b>sechzehn</b> (без s), <b>siebzehn</b> (без en), achtzehn, neunzehn, zwanzig.</p>
@@ -256,7 +256,7 @@ items:[
  {t:'mc',q:'Jahreszahl 1989 =',o:['neunzehnhundertneunundachtzig','neunzehnhundertachtundneunzig','neunzehnneunundachtzig','achtzehnhundertneunundachtzig'],a:0,ex:'neunzehnhundert + neunundachtzig.'}
 ]},
 
-{id:'L9', title:'9. Время, дни недели, am / um / im', goal:'Называть время официально и разговорно (в том числе по-австрийски) и ставить нужный предлог.',
+{id:'L9', title:'9. Time, days of the week, am / um / im', goal:'Tell the time officially and informally (incl. Austrian) and use the right preposition.',
 theory:`
 <h3>Вопрос и ответ</h3>
 <p><i>Wie spät ist es? / Wie viel Uhr ist es?</i> – Es ist … · <i>Um wie viel Uhr …? / Wann …?</i> – <b>Um</b> …</p>
@@ -293,7 +293,7 @@ items:[
  {t:'mc',q:'Der Deutschkurs ist ___ Montag und ___ Mittwoch.',o:['am … am','um … um','im … im','in … in'],a:0,ex:'Дни недели → am.'}
 ]},
 
-{id:'L10', title:'10. Знакомство, du / Sie, анкета', goal:'Здороваться, прощаться, выбирать du или Sie, отвечать на вопросы о себе.',
+{id:'L10', title:'10. Introductions, du / Sie, forms', goal:'Greet, say goodbye, choose du or Sie, answer questions about yourself.',
 theory:`
 <h3>Приветствие и прощание</h3>
 <table class="tb"><tr><th>здороваемся</th><th>прощаемся</th></tr>
@@ -326,7 +326,7 @@ items:[
  {t:'mc',q:'„Wie bitte?“ bedeutet:',o:['Простите, что? (не расслышал)','Как дела?','Пожалуйста','Как вас зовут?'],a:0,ex:'Wie bitte? — переспрос.'}
 ]},
 
-{id:'L11', title:'11. Лексика: еда, квартира, офис', goal:'Знать самые частые слова тем с артиклями.',
+{id:'L11', title:'11. Vocabulary: food, flat, office', goal:'Know the most frequent topic words with their articles.',
 theory:`
 <h3>Еда и напитки (Essen und Trinken)</h3>
 <table class="tb"><tr><th>der</th><th>die</th><th>das</th></tr>

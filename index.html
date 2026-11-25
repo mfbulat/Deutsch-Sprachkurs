@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -105,6 +105,26 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-vis
 .cheat summary{cursor:pointer;font:700 16px Archivo,sans-serif}
 .sec{font:800 13px Archivo,sans-serif;color:var(--red);margin:34px 0 0;letter-spacing:.02em}
 .prog{height:6px;border-radius:3px;background:var(--chip);margin-top:8px;overflow:hidden;max-width:260px}.prog i{display:block;height:100%;background:var(--ok)}
+.decks{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:20px}
+.deck{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;color:var(--ink);font:inherit;min-height:84px}
+.deck:hover{border-color:var(--ink)}.deck b{display:block;font:700 16px Archivo,sans-serif}.deck span{font-size:14px;color:var(--mute)}
+.deck.hard{border-color:var(--red)}
+.fc{perspective:1200px;margin-top:18px;cursor:pointer;user-select:none}
+.fcin{position:relative;min-height:300px;transition:transform .45s;transform-style:preserve-3d}
+.fc.flip .fcin{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;background:var(--paper);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;box-shadow:0 14px 34px -26px rgba(0,0,0,.45)}
+.face.back{transform:rotateY(180deg)}
+.word{font:800 clamp(30px,8vw,46px)/1.1 Archivo,sans-serif;overflow-wrap:anywhere}
+.word .m{color:light-dark(#1d5fbf,#7fb0ff)}.word .f{color:var(--red)}.word .n{color:var(--ok)}
+.pl{margin-top:10px;color:var(--mute);font-size:17px}
+.tr{font:700 clamp(24px,6vw,34px)/1.2 Archivo,sans-serif}.tr2{margin-top:8px;color:var(--mute);font-size:18px}
+.say{margin-top:18px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.say svg{width:20px;height:20px}
+.fcbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg button{min-height:40px;padding:0 14px;border:0;background:var(--paper);color:var(--ink);font:600 14px "Source Sans 3",sans-serif;cursor:pointer}.seg button.on{background:var(--ink);color:var(--paper)}
+.kb{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.kb .btn{min-height:56px}
+.legend{font-size:14px;color:var(--mute);margin-top:8px}.legend b.m{color:light-dark(#1d5fbf,#7fb0ff)}.legend b.f{color:var(--red)}.legend b.n{color:var(--ok)}
+@media(prefers-reduced-motion:reduce){.fcin{transition:none}}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.on{opacity:1}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -113,15 +133,16 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-vis
 </head>
 <body>
 <div class="flag"></div>
-<main class="wrap" id="app"><p>Lade …</p></main>
+<main class="wrap" id="app"><p>Loading …</p></main>
 <div class="toast" id="toast"></div>
 <script src="tests.js"></script>
 <script src="lessons.js"></script>
 <script src="lessons2.js"></script>
+<script src="vocab.js"></script>
 <script>
 {
 const TESTS=window.TESTS||[],LESSONS=window.LESSONS||[],ALL=TESTS.concat(LESSONS);
-function buildMix(ref){return {id:'MIX',title:'Микс по всем главам',items:ref.map(([l,i])=>LESSONS.find(x=>x.id===l).items[i]),ref}}
+function buildMix(ref){return {id:'MIX',title:'Mix of all chapters',items:ref.map(([l,i])=>LESSONS.find(x=>x.id===l).items[i]),ref}}
 function newMix(n){const all=[];LESSONS.forEach(l=>l.items.forEach((_,i)=>all.push([l.id,i])));return buildMix(shuffle(all).slice(0,n))}
 const LIMIT=60*60;
 const app=document.getElementById('app');
@@ -131,7 +152,7 @@ const norm=s=>(s||'').toLowerCase().replace(/[’'„“"«».,!?;:()]/g,' ').re
 const key=id=>'zt-a1-'+id;
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1900)}
-function copy(t,msg){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast(msg),()=>toast('Не удалось скопировать'));else toast('Копирование недоступно')}
+function copy(t,msg){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast(msg),()=>toast('Could not copy'));else toast('Copy not available')}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 const save=()=>store.set(key(T.id),S);
 
@@ -183,26 +204,84 @@ const canSpeak=()=>'speechSynthesis' in window;
 function makePerm(t){const p={};t.items.forEach((q,i)=>{const n=q.t==='gap'?q.bank.length:q.t==='order'?q.w.length:q.o?q.o.length:0;if(n)p[i]=shuffle([...Array(n).keys()])});return p}
 const P=(qi,n)=>(S.perm&&S.perm[qi])||[...Array(n).keys()];
 /* ---------- главная ---------- */
+
+/* ---------- flashcards ---------- */
+const VOCAB=window.VOCAB||[];
+const vk=w=>w[0];
+const fcStore={get(){return store.get('zt-fc')||{}},set(v){store.set('zt-fc',v)}};
+function deckCards(){
+ const st=fcStore.get(),all=uniq(VOCAB.flatMap(d=>d.w)),known=w=>(st[vk(w)]||0)>0,hard=all.filter(w=>(st[vk(w)]||0)<0);
+ const main=VOCAB.filter(d=>!d.extra),ex=VOCAB.filter(d=>d.extra);
+ const one=(id,t,ws,c)=>`<button class="deck ${c||''}" data-deck="${id}"><b>${esc(t)}</b><span>${ws.length} words · known ${ws.filter(known).length}</span></button>`;
+ return one('ALL','All lesson words',uniq(main.flatMap(d=>d.w)))+(hard.length?one('HARD','Hard words (“don’t know”)',hard,'hard'):'')+main.map(d=>one(d.id,d.t,d.w)).join('')+ex.map(d=>one(d.id,d.t+' ★',d.w)).join('');
+}
+const uniq=ws=>[...new Map(ws.map(w=>[vk(w),w])).values()];
+function deckWords(id){const st=fcStore.get();if(id==='ALL')return uniq(VOCAB.filter(d=>!d.extra).flatMap(d=>d.w));if(id==='HARD')return uniq(VOCAB.flatMap(d=>d.w).filter(w=>(st[vk(w)]||0)<0));if(id==='HARD')return VOCAB.flatMap(d=>d.w).filter(w=>(st[vk(w)]||0)<0);return (VOCAB.find(d=>d.id===id)||{w:[]}).w}
+function deckTitle(id){return id==='ALL'?'All lesson words':id==='HARD'?'Hard words':(VOCAB.find(d=>d.id===id)||{}).t}
+let F=null;
+function colorDe(s){return esc(s).replace(/^(der)\b/,'<span class="m">der</span>').replace(/^(die)\b/,'<span class="f">die</span>').replace(/^(das)\b/,'<span class="n">das</span>')}
+function sayDe(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/\(.*?\)/g,'').replace(/…/g,''));u.lang='de-DE';u.rate=.85;if(voices.length){u.voice=voices[0];u.lang=voices[0].lang}speechSynthesis.speak(u)}catch(e){}}
+function openDeck(id,words){
+ const ws=words||deckWords(id);if(!ws.length){toast('No words in this deck');return}
+ const dir=(store.get('zt-fc-dir'))||'de';
+ F={id,title:deckTitle(id),list:shuffle([...ws]),i:0,flip:false,dir,miss:[],ok:0};drawCard();window.scrollTo(0,0);
+}
+function drawCard(){
+ clearInterval(tick);
+ if(F.i>=F.list.length)return fcDone();
+ const w=F.list[F.i],de=F.dir==='de';
+ const front=de?`<div class="word">${colorDe(w[0])}</div>${w[1]?`<div class="pl">${esc(w[1])}</div>`:''}`:`<div class="tr">${esc(w[2])}</div><div class="tr2">${esc(w[3])}</div>`;
+ const back=de?`<div class="tr">${esc(w[2])}</div><div class="tr2">${esc(w[3])}</div>`:`<div class="word">${colorDe(w[0])}</div>${w[1]?`<div class="pl">${esc(w[1])}</div>`:''}`;
+ const sayBtn='<button class="say" data-say aria-label="Pronounce"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8v8a4.5 4.5 0 002.5-4z"/></svg></button>';
+ app.innerHTML=`<div class="bar"><div><span class="note">Flashcards</span><h2>${esc(F.title)}</h2></div><button class="btn sm ghost" id="home">Back</button></div>
+ <div class="fcbar"><span class="note">Card ${F.i+1} of ${F.list.length} · known ${F.ok} · to repeat ${F.miss.length}</span>
+ <div class="seg"><button data-dir="de" class="${de?'on':''}">DE → RU/EN</button><button data-dir="ru" class="${de?'':'on'}">RU/EN → DE</button></div></div>
+ <div class="fc ${F.flip?'flip':''}" id="card"><div class="fcin"><div class="face front">${front}${de?sayBtn:''}<div class="hint">Tap the card to flip</div></div><div class="face back">${back}${de?'':sayBtn}</div></div></div>
+ <div class="kb"><button class="btn ghost" id="no">✕ Don’t know</button><button class="btn" id="yes">✓ Know</button></div>
+ <p class="legend">Colours: <b class="m">der</b> masculine · <b class="f">die</b> feminine · <b class="n">das</b> neuter. Keys: Space = flip, ← = don’t know, → = know.</p>`;
+ document.getElementById('home').onclick=()=>{F=null;home()};
+ const card=document.getElementById('card');
+ card.onclick=e=>{if(e.target.closest('[data-say]')){e.stopPropagation();sayDe(w[0]);return}F.flip=!F.flip;card.classList.toggle('flip',F.flip)};
+ app.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{F.dir=b.dataset.dir;store.set('zt-fc-dir',F.dir);F.flip=false;drawCard()});
+ const mark=k=>{const st=fcStore.get(),key=vk(w);st[key]=k?Math.max(1,(st[key]||0)+1):-1;fcStore.set(st);if(k)F.ok++;else F.miss.push(w);F.i++;F.flip=false;drawCard()};
+ document.getElementById('no').onclick=()=>mark(false);document.getElementById('yes').onclick=()=>mark(true);
+}
+function fcDone(){
+ app.innerHTML=`<div class="bar"><h1>${esc(F.title)}</h1><button class="btn sm ghost" id="home">Back</button></div>
+ <section class="paper"><div class="score">${F.ok}/${F.list.length}</div><p style="font-size:19px;margin:8px 0 0">Known: <b>${F.ok}</b> · To repeat: <b>${F.miss.length}</b></p>
+ ${F.miss.length?`<div class="passage" style="margin-top:14px">${F.miss.map(w=>`<div>${colorDe(w[0])} — ${esc(w[2])}</div>`).join('')}</div>`:''}
+ <div class="btns">${F.miss.length?'<button class="btn red" id="rep">Repeat the ones I didn’t know</button>':''}<button class="btn ghost" id="again">Whole deck again</button></div></section>`;
+ document.getElementById('home').onclick=()=>{F=null;home()};
+ const r=document.getElementById('rep');if(r)r.onclick=()=>openDeck(F.id,F.miss);
+ document.getElementById('again').onclick=()=>openDeck(F.id);
+}
+document.addEventListener('keydown',e=>{if(!F||!document.getElementById('card')||/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+ if(e.key===' '){e.preventDefault();document.getElementById('card').click()}else if(e.key==='ArrowLeft')document.getElementById('no').click();else if(e.key==='ArrowRight')document.getElementById('yes').click()});
+
 function card(t,isL){const s=store.get(key(t.id));
- const last=s&&s.done?`<div class="last">Последний результат: <b>${s.pct}%</b></div>${isL?`<div class="prog"><i style="width:${s.pct}%"></i></div>`:''}`:s&&!s.done?'<div class="last">Есть незаконченная попытка</div>':'';
- const btns=isL?`<button class="btn sm red" data-a="read" data-id="${t.id}">Теория</button><button class="btn sm ghost" data-a="learn" data-id="${t.id}">Упражнения</button>`
-  :`${s&&!s.done?`<button class="btn sm" data-a="resume" data-id="${t.id}">Продолжить</button>`:''}${s&&s.done?`<button class="btn sm ghost" data-a="review" data-id="${t.id}">Разбор</button>`:''}<button class="btn sm red" data-a="exam" data-id="${t.id}">Экзамен</button><button class="btn sm ghost" data-a="learn" data-id="${t.id}">Учебный</button>`;
- return `<div class="tcard"><div><h2>${esc(t.title)}</h2><p>${esc(isL?t.goal:t.sub)} · ${t.items.length} ${isL?'упражнений':'заданий'}</p>${last}</div><div class="btns">${btns}</div></div>`}
+ const last=s&&s.done?`<div class="last">Last result: <b>${s.pct}%</b></div>${isL?`<div class="prog"><i style="width:${s.pct}%"></i></div>`:''}`:s&&!s.done?'<div class="last">Unfinished attempt</div>':'';
+ const btns=isL?`<button class="btn sm red" data-a="read" data-id="${t.id}">Theory</button><button class="btn sm ghost" data-a="learn" data-id="${t.id}">Exercises</button>`
+  :`${s&&!s.done?`<button class="btn sm" data-a="resume" data-id="${t.id}">Continue</button>`:''}${s&&s.done?`<button class="btn sm ghost" data-a="review" data-id="${t.id}">Review</button>`:''}<button class="btn sm red" data-a="exam" data-id="${t.id}">Exam</button><button class="btn sm ghost" data-a="learn" data-id="${t.id}">Practice</button>`;
+ return `<div class="tcard"><div><h2>${esc(t.title)}</h2><p>${esc(isL?t.goal:t.sub)} · ${t.items.length} ${isL?'exercises':'tasks'}</p>${last}</div><div class="btns">${btns}</div></div>`}
 function start(t,a){T=t;let order=[...T.items.keys()];if(a==='exam'){const ess=order.filter(i=>T.items[i].t==='essay');order=shuffle(order.filter(i=>T.items[i].t!=='essay')).concat(ess)}
  S={mode:a,order,i:0,ans:{},chk:{},plays:{},perm:makePerm(T),start:Date.now(),done:false};save();render();window.scrollTo(0,0)}
 function home(){
  clearInterval(tick);try{speechSynthesis.cancel()}catch(e){}
- app.innerHTML=`<h1>Zwischentest A1 — учебник и тренажёр</h1>
- <p class="sub">Deutsch-Sprachkurs 1 · Momente A1, уроки 1–9. Настоящий тест: среда 25.11, 17:00, 50 вопросов за 60 минут, назад вернуться нельзя.</p>
- <div class="sec">УЧЕБНИК · теория + упражнения по темам</div>
+ app.innerHTML=`<h1>Zwischentest A1 — textbook &amp; trainer</h1>
+ <p class="sub">Deutsch-Sprachkurs 1 · Momente A1, lessons 1–9. Theory and explanations are in Russian; the interface is in English.</p>
+ <div class="sec">TEXTBOOK · theory + exercises by topic</div>
  <div class="tests">${LESSONS.map(t=>card(t,true)).join('')}</div>
- <div class="tests"><div class="tcard"><div><h2>Микс по всем главам</h2><p>25 случайных упражнений из учебника — каждый раз новый набор · ${LESSONS.reduce((s,l)=>s+l.items.length,0)} упражнений в банке</p>${(()=>{const s=store.get(key('MIX'));return s&&s.done?`<div class="last">Последний микс: <b>${s.pct}%</b></div>`:s&&!s.done?'<div class="last">Есть незаконченный микс</div>':''})()}</div><div class="btns">${(()=>{const s=store.get(key('MIX'));return s&&!s.done?'<button class="btn sm" data-a="mixresume" data-id="MIX">Продолжить</button>':''})()}<button class="btn sm red" data-a="mix" data-id="MIX">Новый микс</button></div></div></div>
- <div class="sec">ПРОБНЫЕ ТЕСТЫ · симуляция экзамена</div>
+ <div class="tests"><div class="tcard"><div><h2>Mix of all chapters</h2><p>25 random textbook exercises — a new set every time · ${LESSONS.reduce((s,l)=>s+l.items.length,0)} exercises in the bank</p>${(()=>{const s=store.get(key('MIX'));return s&&s.done?`<div class="last">Last mix: <b>${s.pct}%</b></div>`:s&&!s.done?'<div class="last">Unfinished mix</div>':''})()}</div><div class="btns">${(()=>{const s=store.get(key('MIX'));return s&&!s.done?'<button class="btn sm" data-a="mixresume" data-id="MIX">Continue</button>':''})()}<button class="btn sm red" data-a="mix" data-id="MIX">New mix</button></div></div></div>
+ <div class="sec">FLASHCARDS · all vocabulary from lessons 1–9</div>
+ <div class="decks">${deckCards()}</div>
+ <div class="sec">PRACTICE TESTS · exam simulation</div>
  <div class="tests">${TESTS.map(t=>card(t,false)).join('')}</div>
- <section class="paper"><h2>Как пользоваться</h2>
- <p><b>Учебник</b>: прочитай теорию главы, потом сделай упражнения. Во время упражнений теорию можно открыть сверху. Порядок глав — от основы к деталям; главы 1–5 самые важные.</p>
- <p><b>Пробные тесты</b>. Экзамен: 60 минут, случайный порядок, назад нельзя, аудио максимум 2 раза. Учебный режим: проверка и объяснение сразу.</p>
- <p class="note">Аудио озвучивает синтезатор речи браузера. Кнопки ä ö ü ß под полями ввода вставляют буквы.</p></section>`;
+ <section class="paper"><h2>How to use</h2>
+ <p><b>Textbook</b>: read the chapter theory, then do the exercises. The theory can be opened at the top while you practise. Chapters 1–5 matter most.</p>
+ <p><b>Flashcards</b>: all vocabulary from lessons 1–9 — flip, mark “know / don’t know”, repeat the hard ones.</p>
+ <p><b>Practice tests</b>. Exam: 60 minutes, random order, no going back, audio max. 2 plays. Practice: instant check and explanation.</p>
+ <p class="note">Audio uses the browser’s speech synthesis. The ä ö ü ß buttons under input fields insert letters.</p></section>`;
+ app.querySelectorAll('[data-deck]').forEach(b=>b.onclick=()=>openDeck(b.dataset.deck));
  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
   if(a==='mix'){const m=newMix(25);start(m,'learn');S.ref=m.ref;save();return}
   if(a==='mixresume'){S=store.get(key('MIX'));T=buildMix(S.ref);render();return}
@@ -213,10 +292,10 @@ function home(){
 }
 function lesson(t){
  T=t;clearInterval(tick);
- app.innerHTML=`<div class="bar"><div><span class="note">Учебник</span><h1>${esc(t.title)}</h1></div><button class="btn sm ghost" id="home">К оглавлению</button></div>
- <p class="sub"><b>Цель:</b> ${esc(t.goal)}</p>
+ app.innerHTML=`<div class="bar"><div><span class="note">Textbook</span><h1>${esc(t.title)}</h1></div><button class="btn sm ghost" id="home">Contents</button></div>
+ <p class="sub"><b>Goal:</b> ${esc(t.goal)}</p>
  <section class="paper theory">${t.theory.replace(/<table/g,'<div class="tbw"><table').replace(/<\/table>/g,'</table></div>')}</section>
- <div class="btns"><button class="btn red" id="go">Упражнения (${t.items.length}) →</button><button class="btn ghost" id="home2">К оглавлению</button></div>`;
+ <div class="btns"><button class="btn red" id="go">Exercises (${t.items.length}) →</button><button class="btn ghost" id="home2">Contents</button></div>`;
  document.getElementById('home').onclick=home;document.getElementById('home2').onclick=home;
  document.getElementById('go').onclick=()=>start(t,'learn');window.scrollTo(0,0);
 }
@@ -228,25 +307,25 @@ function render(){
  clearInterval(tick);try{speechSynthesis.cancel()}catch(e){}
  if(S.done)return results();
  const learn=S.mode==='learn',qi=S.order[S.i],q=T.items[qi],a=S.ans[qi],chk=learn&&S.chk[qi],N=S.order.length;
- const cells=S.order.map((k,j)=>{let c='';if(learn&&S.chk[k])c=cls(grade(T.items[k],S.ans[k]));else if(S.ans[k]!=null&&S.ans[k]!=='')c='done';return `<button data-j="${j}" class="${c} ${j===S.i?'cur':''}" ${learn?'':'disabled'} aria-label="Frage ${j+1}">${j+1}</button>`}).join('');
- app.innerHTML=`<div class="bar"><div><h2>${esc(T.title)}</h2><span class="note">${learn?'Учебный режим':'Экзамен · назад нельзя'}</span></div>
- <div class="btns" style="margin:0">${learn?'':`<div class="timer" id="tm">${fmtT(timeLeft())}</div>`}<button class="btn sm ghost" id="home">Выйти</button></div></div>
+ const cells=S.order.map((k,j)=>{let c='';if(learn&&S.chk[k])c=cls(grade(T.items[k],S.ans[k]));else if(S.ans[k]!=null&&S.ans[k]!=='')c='done';return `<button data-j="${j}" class="${c} ${j===S.i?'cur':''}" ${learn?'':'disabled'} aria-label="Question ${j+1}">${j+1}</button>`}).join('');
+ app.innerHTML=`<div class="bar"><div><h2>${esc(T.title)}</h2><span class="note">${learn?'Practice mode':'Exam · no going back'}</span></div>
+ <div class="btns" style="margin:0">${learn?'':`<div class="timer" id="tm">${fmtT(timeLeft())}</div>`}<button class="btn sm ghost" id="home">Exit</button></div></div>
  <div class="cells">${cells}</div>
- ${T.theory?`<details class="cheat"><summary>Теория главы (открыть)</summary><div class="theory">${T.theory.replace(/<table/g,'<div class="tbw"><table').replace(/<\/table>/g,'</table></div>')}</div></details>`:''}
- <section class="paper"><div class="qno"><b>${S.i+1}</b><span>Frage ${S.i+1} von ${N}</span></div>
+ ${T.theory?`<details class="cheat"><summary>Chapter theory (open)</summary><div class="theory">${T.theory.replace(/<table/g,'<div class="tbw"><table').replace(/<\/table>/g,'</table></div>')}</div></details>`:''}
+ <section class="paper"><div class="qno"><b>${S.i+1}</b><span>Question ${S.i+1} of ${N}</span></div>
  <div class="prompt">${esc(q.q||'')}</div><div id="body"></div><div id="fb"></div><div class="btns" id="nav"></div></section>`;
  body(q,qi,a,chk);
  if(chk)document.getElementById('fb').innerHTML=fbHTML(q,qi);
  const nav=document.getElementById('nav');
- nav.innerHTML=learn?`${S.i>0?'<button class="btn ghost" id="prev">← Назад</button>':''}${chk?'':'<button class="btn red" id="check">Проверить</button>'}${S.i<N-1?'<button class="btn" id="next">Дальше →</button>':'<button class="btn" id="fin">Итог</button>'}<button class="btn ghost" id="ask">Скопировать для Claude</button>`
-  :`${S.i<N-1?'<button class="btn" id="next">Nächste Seite →</button>':'<button class="btn red" id="fin">Abgeben</button>'}`;
+ nav.innerHTML=learn?`${S.i>0?'<button class="btn ghost" id="prev">← Back</button>':''}${chk?'':'<button class="btn red" id="check">Check</button>'}${S.i<N-1?'<button class="btn" id="next">Next →</button>':'<button class="btn" id="fin">Finish</button>'}<button class="btn ghost" id="ask">Copy for Claude</button>`
+  :`${S.i<N-1?'<button class="btn" id="next">Next page →</button>':'<button class="btn red" id="fin">Submit</button>'}`;
  const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f};
  on('home',()=>{save();home()});
  on('prev',()=>{S.i--;save();render()});
  on('next',()=>{S.i++;save();render();window.scrollTo(0,0)});
  on('check',()=>{S.chk[qi]=true;save();render()});
- on('fin',e=>{if(!learn){const miss=S.order.filter(k=>{const v=S.ans[k];return v==null||v===''}).length;const b=document.getElementById('fin');if(miss&&!b.dataset.sure){b.dataset.sure=1;b.textContent=`Без ответа: ${miss}. Всё равно сдать`;return}}finish()});
- on('ask',()=>copy(askText(q,qi),'Скопировано — вставь в чат с Claude'));
+ on('fin',e=>{if(!learn){const miss=S.order.filter(k=>{const v=S.ans[k];return v==null||v===''}).length;const b=document.getElementById('fin');if(miss&&!b.dataset.sure){b.dataset.sure=1;b.textContent=`Unanswered: ${miss}. Submit anyway`;return}}finish()});
+ on('ask',()=>copy(askText(q,qi),'Copied — paste it into the Claude chat'));
  app.querySelectorAll('.cells button').forEach(b=>{if(!b.disabled)b.onclick=()=>{S.i=+b.dataset.j;save();render()}});
  if(!learn){tick=setInterval(()=>{const t=timeLeft(),e=document.getElementById('tm');if(e){e.textContent=fmtT(t);e.classList.toggle('low',t<300)}if(t<=0)finish()},1000)}
 }
@@ -274,7 +353,7 @@ function body(q,qi,a,lock){
  if(q.t==='tf'){b.innerHTML=[['Wahr',true],['Falsch',false]].map(([t,v])=>`<label class="opt ${a===v?'sel':''}"><input type="radio" name="o" data-v="${v}" ${a===v?'checked':''} ${dis}>${t}</label>`).join('');
   b.querySelectorAll('input').forEach(i=>i.onchange=()=>{setA(qi,i.dataset.v==='true');b.querySelectorAll('.opt').forEach(l=>l.classList.toggle('sel',l.contains(i)))})}
  if(q.t==='fill'||q.t==='short'){
-  b.innerHTML=`${q.grid?`<div class="grid">${q.grid}</div>`:''}<input type="text" id="sa" autocomplete="off" spellcheck="false" placeholder="Antwort" value="${esc(a||'')}" ${dis}>${lock?'':keysHTML}${q.hint?`<div class="hint">${q.hint}</div>`:''}`;
+  b.innerHTML=`${q.grid?`<div class="grid">${q.grid}</div>`:''}<input type="text" id="sa" autocomplete="off" spellcheck="false" placeholder="Answer" value="${esc(a||'')}" ${dis}>${lock?'':keysHTML}${q.hint?`<div class="hint">${q.hint}</div>`:''}`;
   document.getElementById('sa').oninput=e=>setA(qi,e.target.value);bindKeys(b)}
  if(q.t==='multi'){
   const v=a?[...a]:[];let k=0;
@@ -285,13 +364,13 @@ function body(q,qi,a,lock){
   bindKeys(pr.parentElement)}
  if(q.t==='sel'){
   const v=a?[...a]:[];
-  b.innerHTML=q.rows.map((r,k)=>`<div class="mrow"><span>${r[0].replace(/___/g,'<b>___</b>')}</span><select data-k="${k}" ${dis}><option value="">Auswählen …</option>${q.c.map(c=>`<option ${v[k]===c?'selected':''}>${c}</option>`).join('')}</select></div>`).join('');
+  b.innerHTML=q.rows.map((r,k)=>`<div class="mrow"><span>${r[0].replace(/___/g,'<b>___</b>')}</span><select data-k="${k}" ${dis}><option value="">Choose …</option>${q.c.map(c=>`<option ${v[k]===c?'selected':''}>${c}</option>`).join('')}</select></div>`).join('');
   b.querySelectorAll('select').forEach(s=>s.onchange=()=>{v[+s.dataset.k]=s.value||null;setA(qi,q.rows.map((_,j)=>v[j]||null))})}
  if(q.t==='order'){
   const v=a?[...a]:[];
-  const draw=()=>{b.innerHTML=`<div class="built" aria-label="Ваш ответ">${v.length?v.map((i,p)=>`<button class="chipw" data-p="${p}" ${dis}>${esc(q.w[i])}</button>`).join(''):'<span class="note">Нажимайте на слова по порядку</span>'}</div>
+  const draw=()=>{b.innerHTML=`<div class="built" aria-label="Your answer">${v.length?v.map((i,p)=>`<button class="chipw" data-p="${p}" ${dis}>${esc(q.w[i])}</button>`).join(''):'<span class="note">Tap the words in order</span>'}</div>
    <div class="tiles">${P(qi,q.w.length).map(i=>`<button class="chipw ${v.includes(i)?'used':''}" data-i="${i}" ${dis||v.includes(i)?'disabled':''}>${esc(q.w[i])}</button>`).join('')}</div>
-   ${lock?'':'<div class="btns"><button class="btn sm ghost" id="clr">Сбросить</button></div>'}`;
+   ${lock?'':'<div class="btns"><button class="btn sm ghost" id="clr">Reset</button></div>'}`;
    b.querySelectorAll('.tiles .chipw').forEach(c=>c.onclick=()=>{v.push(+c.dataset.i);setA(qi,[...v]);draw()});
    b.querySelectorAll('.built .chipw').forEach(c=>c.onclick=()=>{v.splice(+c.dataset.p,1);setA(qi,v.length?[...v]:'');draw()});
    const cl=document.getElementById('clr');if(cl)cl.onclick=()=>{v.length=0;setA(qi,'');draw()}};
@@ -301,7 +380,7 @@ function body(q,qi,a,lock){
   const commit=()=>setA(qi,v.some(Boolean)?q.a.map((_,j)=>v[j]||null):'');
   const draw=()=>{b.innerHTML=`<div class="text">${q.parts.map((p,k)=>esc(p)+(k<q.a.length?`<button class="gap ${v[k]?'full':''} ${k===act&&!lock?'act':''}" data-k="${k}" ${dis}>${v[k]?esc(v[k]):'&nbsp;'}</button>`:'')).join('')}</div>
    <div class="bank">${P(qi,q.bank.length).map(i=>q.bank[i]).map(w=>`<button class="chipw ${v.includes(w)?'used':''}" data-w="${esc(w)}" ${dis}>${esc(w)}</button>`).join('')}</div>
-   <div class="hint">Выберите пропуск (красная рамка), затем слово. Нажмите на заполненный пропуск ещё раз, чтобы очистить.</div>`;
+   <div class="hint">Pick a gap (red frame), then a word. Tap a filled gap again to clear it.</div>`;
    b.querySelectorAll('.gap').forEach(g=>g.onclick=()=>{const k=+g.dataset.k;if(v[k]&&k===act)v[k]=null;act=k;commit();draw()});
    b.querySelectorAll('.bank .chipw').forEach(c=>c.onclick=()=>{const w=c.dataset.w,o=v.indexOf(w);if(o>=0)v[o]=null;v[act]=w;const nx=v.findIndex((x,i)=>i<q.a.length&&!x);act=nx>=0?nx:act;commit();draw()})};
   draw()}
@@ -311,24 +390,24 @@ function body(q,qi,a,lock){
  if(q.t==='listen'){
   const learn=S.mode==='learn',used=S.plays[qi]||0,left=learn?Infinity:2-used;
   const inner=q.rows?tfRows(q.rows,a,dis,qi):null;
-  b.innerHTML=`<div class="audio"><button class="play" id="play" aria-label="Abspielen" ${left<=0||!canSpeak()?'disabled':''}><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l14 8-14 8z"/></svg></button>
-  <div><b>Hören</b><div class="note" id="pl">${canSpeak()?(learn?'Слушать можно сколько угодно':`Осталось прослушиваний: ${Math.max(0,left)}`):'Синтез речи недоступен в этом браузере'}</div></div>
-  ${learn||!canSpeak()?'<button class="btn sm ghost" id="scr">Текст</button>':''}</div><div id="scrt"></div>
+  b.innerHTML=`<div class="audio"><button class="play" id="play" aria-label="Play" ${left<=0||!canSpeak()?'disabled':''}><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l14 8-14 8z"/></svg></button>
+  <div><b>Listening</b><div class="note" id="pl">${canSpeak()?(learn?'Unlimited plays':`Plays left: ${Math.max(0,left)}`):'Speech synthesis is not available in this browser'}</div></div>
+  ${learn||!canSpeak()?'<button class="btn sm ghost" id="scr">Transcript</button>':''}</div><div id="scrt"></div>
   ${inner?inner.html:mcHTML(q.o,a,dis,qi)}`;
   if(inner)inner.bind(b);else bindMC(b,qi);
   const p=document.getElementById('play');
-  if(p)p.onclick=()=>{if(!learn){S.plays[qi]=(S.plays[qi]||0)+1;save();const l=2-S.plays[qi];document.getElementById('pl').textContent=`Осталось прослушиваний: ${l}`;p.disabled=true;speak(q.lines,()=>{p.disabled=l<=0})}else speak(q.lines)};
+  if(p)p.onclick=()=>{if(!learn){S.plays[qi]=(S.plays[qi]||0)+1;save();const l=2-S.plays[qi];document.getElementById('pl').textContent=`Plays left: ${l}`;p.disabled=true;speak(q.lines,()=>{p.disabled=l<=0})}else speak(q.lines)};
   const sc=document.getElementById('scr');if(sc)sc.onclick=()=>{const t=document.getElementById('scrt');t.innerHTML=t.innerHTML?'':`<div class="passage script">${q.lines.map(l=>`<p>${l.length>1&&q.lines.length>1?`<b>${esc(l[0])}:</b> `:''}${esc(l[1])}</p>`).join('')}</div>`}}
  if(q.t==='essay'){
   b.innerHTML=`<textarea id="es" placeholder="Ich …" ${dis}>${esc(a||'')}</textarea>${lock?'':keysHTML}<div class="hint" id="wc"></div>`;
-  const t=document.getElementById('es'),wc=()=>{const n=(t.value.match(/[.!?](\s|$)/g)||[]).length;document.getElementById('wc').textContent=`Предложений: ${n} из 6`};
+  const t=document.getElementById('es'),wc=()=>{const n=(t.value.match(/[.!?](\s|$)/g)||[]).length;document.getElementById('wc').textContent=`Sentences: ${n} of 6`};
   t.oninput=()=>{setA(qi,t.value);wc()};wc();bindKeys(b)}
 }
 
 /* ---------- ответы и разбор ---------- */
 function ansText(q,a){
  const empty=a==null||a===''||(Array.isArray(a)&&!a.some(x=>x!=null&&x!==''));
- if(empty)return '— (нет ответа)';
+ if(empty)return '— (no answer)';
  switch(q.t){
   case 'mc':return q.o[a];
   case 'tf':return a?'Wahr':'Falsch';
@@ -357,30 +436,30 @@ function rightText(q){
 }
 function fbHTML(q,qi){
  const a=S.ans[qi],g=grade(q,a),c=cls(g);
- const t=g===null?'Проверь по списку или пришли Claude':g>=1?'Верно':g>0?`Частично: ${Math.round(g*100)}%`:'Неверно';
- const script=q.t==='listen'?`<div class="script"><b>Текст:</b>${q.lines.map(l=>`<p>${q.lines.length>1?`<b>${esc(l[0])}:</b> `:''}${esc(l[1])}</p>`).join('')}</div>`:'';
- if(q.t==='essay')return `<div class="fb p"><b class="t">${t}</b><div>Чек-лист:</div><ul>${q.check.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><div>Образец: <i>${esc(q.model)}</i></div></div>`;
- return `<div class="fb ${c}"><b class="t">${t}</b><div>Твой ответ: <span class="ans">${esc(ansText(q,a))}</span></div>
- <div>Правильно: <span class="ans">${esc(rightText(q))}</span></div>${script}<p>${q.ex||''}</p></div>`;
+ const t=g===null?'Check with the list or send it to Claude':g>=1?'Correct':g>0?`Partly: ${Math.round(g*100)}%`:'Wrong';
+ const script=q.t==='listen'?`<div class="script"><b>Transcript:</b>${q.lines.map(l=>`<p>${q.lines.length>1?`<b>${esc(l[0])}:</b> `:''}${esc(l[1])}</p>`).join('')}</div>`:'';
+ if(q.t==='essay')return `<div class="fb p"><b class="t">${t}</b><div>Checklist:</div><ul>${q.check.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><div>Model answer: <i>${esc(q.model)}</i></div></div>`;
+ return `<div class="fb ${c}"><b class="t">${t}</b><div>Your answer: <span class="ans">${esc(ansText(q,a))}</span></div>
+ <div>Correct answer: <span class="ans">${esc(rightText(q))}</span></div>${script}<p>${q.ex||''}</p></div>`;
 }
-function askText(q,qi){return `Вопрос из тренажёра (${T.title}):\n${(q.q||'').replace(/___/g,'___')}${q.grid?'\n'+q.grid:''}${q.text?'\nТекст: '+q.text:''}\nМой ответ: ${ansText(q,S.ans[qi])}\nОбъясни, пожалуйста: `}
+function askText(q,qi){return `Question from the trainer (${T.title}):\n${(q.q||'').replace(/___/g,'___')}${q.grid?'\n'+q.grid:''}${q.text?'\nТекст: '+q.text:''}\nМой ответ: ${ansText(q,S.ans[qi])}\nОбъясни, пожалуйста: `}
 
 function results(){
  clearInterval(tick);
  const pct=S.pct,note=pct>=86?'sehr gut':pct>=74?'gut':pct>=62?'befriedigend':pct>=50?'genügend':'nicht genügend';
  const used=S.mode==='exam'?fmtT(Math.min(LIMIT,Math.floor(((S.end||Date.now())-S.start)/1000))):null;
  const wrong=S.order.filter(k=>{const g=grade(T.items[k],S.ans[k]);return g===null||g<1});
- app.innerHTML=`<div class="bar"><h1>Ergebnis · ${esc(T.title)}</h1><button class="btn sm ghost" id="home">К списку тестов</button></div>
+ app.innerHTML=`<div class="bar"><h1>Result · ${esc(T.title)}</h1><button class="btn sm ghost" id="home">All tests</button></div>
  <section class="paper"><div class="score">${pct}%</div>
- <p style="margin:6px 0 0;font-size:19px"><b>${note}</b> · ${(Math.round(S.pts*10)/10).toString().replace('.',',')} из ${S.max} баллов${used?` · время ${used}`:''}</p>
- <p class="note">Шкала курса: 86% sehr gut, 74% gut, 62% befriedigend, 50% genügend. Сочинение в процент не входит, его проверяет преподаватель.</p>
- <div class="btns"><button class="btn red" id="again">Пройти заново</button><button class="btn ghost" id="wrong">Скопировать ошибки для Claude</button></div></section>
- <section class="paper"><h2>Разбор</h2>${S.order.map((k,j)=>{const q=T.items[k],c=cls(grade(q,S.ans[k]));return `<details class="rq" ${c!=='r'?'open':''}><summary><span class="dot" style="background:var(--${c==='r'?'ok':c==='w'?'bad':'part'})"></span><span><b>${j+1}.</b> ${esc((q.q||'').split('\n')[0])}</span></summary>${fbHTML(q,k)}</details>`}).join('')}</section>`;
+ <p style="margin:6px 0 0;font-size:19px"><b>${note}</b> · ${(Math.round(S.pts*10)/10).toString().replace('.',',')} of ${S.max} points${used?` · time ${used}`:''}</p>
+ <p class="note">Course scale: 86% sehr gut, 74% gut, 62% befriedigend, 50% genügend. The essay is not included in the percentage; the teacher grades it.</p>
+ <div class="btns"><button class="btn red" id="again">Start over</button><button class="btn ghost" id="wrong">Copy mistakes for Claude</button></div></section>
+ <section class="paper"><h2>Review</h2>${S.order.map((k,j)=>{const q=T.items[k],c=cls(grade(q,S.ans[k]));return `<details class="rq" ${c!=='r'?'open':''}><summary><span class="dot" style="background:var(--${c==='r'?'ok':c==='w'?'bad':'part'})"></span><span><b>${j+1}.</b> ${esc((q.q||'').split('\n')[0])}</span></summary>${fbHTML(q,k)}</details>`}).join('')}</section>`;
  document.getElementById('home').onclick=home;
  document.getElementById('again').onclick=()=>{store.del(key(T.id));home()};
  document.getElementById('wrong').onclick=()=>{
   const lines=wrong.map(k=>{const q=T.items[k];return `• ${(q.q||'').replace(/\n/g,' ')}${q.t==='essay'?'\n  мой текст: '+(S.ans[k]||''):'\n  мой ответ: '+ansText(q,S.ans[k])}`});
-  copy(`Результат (${T.title}): ${pct}%.\nРазбери со мной ошибки:\n${lines.join('\n')}`,'Скопировано — вставь в чат')};
+  copy(`Результат (${T.title}): ${pct}%.\nРазбери со мной ошибки:\n${lines.join('\n')}`,'Copied — paste it into the chat')};
 }
 home();
 }

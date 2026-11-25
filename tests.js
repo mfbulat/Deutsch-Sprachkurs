@@ -5,7 +5,7 @@
 // read {title,text,rows:[[утверждение,true/false]]}  listen {lines:[[роль,текст,озвучка?]], + mc или rows}
 // essay {q, check, model}
 window.TESTS = [
-{id:'orig', title:'Тренировка из Moodle', sub:'Те же вопросы, что в Zwischentest (Training)', items:[
+{id:'orig', title:'Moodle training test', sub:'The same questions as Zwischentest (Training)', items:[
  {t:'mc',q:'Tina ___ in Österreich.',o:['lebt','lebst','lebe','leben'],a:0,
   ex:'Tina = sie (3-е лицо ед. ч.) → окончание <b>-t</b>: sie leb<b>t</b>. Для сравнения: ich leb<b>e</b>, du leb<b>st</b>, wir/sie leb<b>en</b>.'},
  {t:'fill',q:'Finden Sie fünf Nomen und schreiben Sie sie mit Artikeln!',grid:'GRAMUSEUMILUPITHEATERDRAKISCHWIMMBADPLORBARIZAUSSTELLUNGSUNG',set:['das museum','das theater','das schwimmbad','die bar','die ausstellung'],
@@ -34,7 +34,7 @@ window.TESTS = [
   ex:'die Nichte — племянница (женщина → die). der Neffe — племянник.'}
 ]},
 
-{id:'A', title:'Вариант A', sub:'Формат настоящего Zwischentest', items:[
+{id:'A', title:'Practice test A', sub:'Same format as the real Zwischentest', items:[
  {t:'mc',q:'Woher ___ du? – Ich komme aus Russland.',o:['kommst','kommt','komme','kommen'],a:0,ex:'du → окончание <b>-st</b>: du komm<b>st</b>.'},
  {t:'mc',q:'Wir ___ in Klagenfurt.',o:['wohnen','wohnt','wohnst','wohne'],a:0,ex:'wir → <b>-en</b> (как инфинитив): wir wohn<b>en</b>.'},
  {t:'multi',q:'Konjugieren Sie „sprechen“: ich ___, du ___, er/sie/es ___, wir ___, ihr ___, sie/Sie ___',a:[['spreche'],['sprichst'],['spricht'],['sprechen'],['sprecht'],['sprechen']],
@@ -107,7 +107,7 @@ window.TESTS = [
   model:'Meine Familie ist nicht groß. Mein Vater heißt Ivan und ist Ingenieur von Beruf. Meine Mutter ist Lehrerin. Ich habe eine Schwester. Sie ist 30 Jahre alt und wohnt in Moskau. Meine Eltern wohnen auch in Moskau.'}
 ]},
 
-{id:'B', title:'Вариант B', sub:'Формат настоящего Zwischentest', items:[
+{id:'B', title:'Practice test B', sub:'Same format as the real Zwischentest', items:[
  {t:'mc',q:'Was ___ ihr am Wochenende? (machen)',o:['macht','machen','machst','mache'],a:0,ex:'ihr → <b>-t</b>: ihr mach<b>t</b>. Не путай: er macht и ihr macht одинаковые.'},
  {t:'mc',q:'Tom ___ gern Pizza. (essen)',o:['isst','esst','esse','essen'],a:0,ex:'essen: e → i у du/er: du <b>isst</b>, er <b>isst</b>. ihr esst — без смены.'},
  {t:'multi',q:'Konjugieren Sie „fahren“: ich ___, du ___, er/sie/es ___, wir ___',a:[['fahre'],['fährst'],['fährt'],['fahren']],ex:'fahren: <b>a → ä</b> только у du и er: du f<b>ä</b>hrst, er f<b>ä</b>hrt. Так же schlafen (du schläfst).'},
@@ -175,7 +175,7 @@ window.TESTS = [
   model:'In meiner Freizeit mache ich gern Sport. Ich fahre gern Rad. Am Wochenende gehe ich oft an den Wörthersee. Ich kann gut schwimmen. Ich kann nicht gut tanzen. Am Abend lese ich Bücher.'}
 ]},
 
-{id:'C', title:'Вариант C', sub:'Формат Zwischentest, чуть сложнее', items:[
+{id:'C', title:'Practice test C', sub:'Zwischentest format, a bit harder', items:[
  {t:'mc',q:'Die Kinder ___ im Garten. (spielen)',o:['spielen','spielt','spielst','spiele'],a:0,ex:'die Kinder = sie (мн. ч.) → <b>-en</b>.'},
  {t:'mc',q:'Er ___ sehr lange. (schlafen)',o:['schläft','schlaft','schlafst','schlafe'],a:0,ex:'schlafen: a → ä у du/er: du schl<b>ä</b>fst, er schl<b>ä</b>ft.'},
  {t:'multi',q:'Konjugieren Sie „nehmen“: ich ___, du ___, er/sie/es ___, ihr ___',a:[['nehme'],['nimmst'],['nimmt'],['nehmt']],ex:'nehmen — неправильный: du <b>nimmst</b>, er <b>nimmt</b> (e→i, h выпадает, m удваивается: nehm- → nimm-). ihr nehmt — обычно.'},
